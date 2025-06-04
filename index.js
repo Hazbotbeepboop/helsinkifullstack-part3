@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const Person = require('./models/person')
@@ -66,16 +67,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
     
-  if (!body.name) {
-    return response.status(400).json({
-      error: 'name missing'
-    })
-  }
-  else if (!body.number) {
-    return response.status(400).json({
-      error: 'number missing'
-    })
-  }
   Person.findOne({ name : { $regex: `^${request.body.name}$`, $options: 'i' } }).then(result => { 
     if(result) {
       return response.status(400).json({
@@ -124,7 +115,7 @@ app.use(unknownEndpoint)
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
-  if (error.name === 'Cast Error') {
+  if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   }   else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
